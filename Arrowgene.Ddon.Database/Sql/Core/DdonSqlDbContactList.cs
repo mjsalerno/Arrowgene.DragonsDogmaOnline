@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Common;
+using Arrowgene.Ddon.Database.Models;
 using Arrowgene.Ddon.Shared.Model;
 
 namespace Arrowgene.Ddon.Database.Sql.Core
@@ -32,7 +33,7 @@ namespace Arrowgene.Ddon.Database.Sql.Core
         private static readonly string SqlUpdateContactByCharIds = $"UPDATE \"{TableName}\" SET \"status\"=@status, \"type\"=@type, \"requester_favorite\"=@requester_favorite, \"requested_favorite\"=@requested_favorite WHERE \"requester_character_id\"=@requester_character_id and \"requested_character_id\"=@requested_character_id;";
 
 
-        public int InsertContact(uint requestingCharacterId, uint requestedCharacterId, ContactListStatus status, ContactListType type, bool requesterFavorite, bool requestedFavorite)
+        public int InsertContact_old(uint requestingCharacterId, uint requestedCharacterId, ContactListStatus status, ContactListType type, bool requesterFavorite, bool requestedFavorite)
         {
             int rowsAffected = ExecuteNonQuery(SqlInsertContact, command =>
             {
@@ -47,6 +48,29 @@ namespace Arrowgene.Ddon.Database.Sql.Core
             if (rowsAffected > NoRowsAffected)
             {
                 return (int)autoIncrement;
+            }
+
+            return 0;
+        }
+        
+        public int InsertContact(uint requestingCharacterId, uint requestedCharacterId, ContactListStatus status, ContactListType type, bool requesterFavorite, bool requestedFavorite)
+        {
+            using var context = CreateContext();
+            var newContact = new DdonContactList()
+            {
+                RequesterCharacterId = (int)requestingCharacterId,
+                RequestedCharacterId = (int)requestedCharacterId,
+                Status = status,
+                Type = type,
+                RequesterFavorite = requesterFavorite,
+                RequestedFavorite = requestedFavorite
+            };
+            context.DdonContactLists.Add(newContact);
+            int rowsAffected = context.SaveChanges();
+
+            if (rowsAffected > 0)
+            {
+                return (int)newContact.Id;
             }
 
             return 0;

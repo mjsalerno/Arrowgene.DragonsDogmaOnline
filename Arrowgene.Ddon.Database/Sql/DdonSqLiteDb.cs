@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.IO;
+using Arrowgene.Ddon.Database.Context;
 using Arrowgene.Ddon.Database.Sql.Core;
 using Arrowgene.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Arrowgene.Ddon.Database.Sql
 {
@@ -10,6 +12,7 @@ namespace Arrowgene.Ddon.Database.Sql
     {
         private static readonly ILogger Logger = LogProvider.Logger<Logger>(typeof(DdonSqLiteDb));
 
+        private DbContextOptions<DdonDbContext> _contextOptions;
 
         public const string MemoryDatabasePath = ":memory:";
         public const int Version = 1;
@@ -29,9 +32,10 @@ namespace Arrowgene.Ddon.Database.Sql
                     File.Delete(_databasePath);
                     Logger.Info($"Database has been wiped.");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     Logger.Error($"Failed to wipe database.");
+                    Logger.Error(e.Message);
                 }
             }
         }
@@ -44,6 +48,8 @@ namespace Arrowgene.Ddon.Database.Sql
                 Logger.Error($"Failed to build connection string");
                 return false;
             }
+            
+            _contextOptions = new DbContextOptionsBuilder<DdonDbContext>().UseSqlite(_connectionString).Options;
 
             ReusableConnection = new SQLiteConnection(_connectionString);
 
@@ -87,6 +93,11 @@ namespace Arrowgene.Ddon.Database.Sql
         protected override SQLiteConnection OpenNewConnection()
         {
             return new SQLiteConnection(_connectionString).OpenAndReturn();
+        }
+
+        public override DdonDbContext CreateContext()
+        {
+            return new DdonDbContext(_contextOptions);
         }
 
         protected override SQLiteCommand Command(string query, SQLiteConnection connection)

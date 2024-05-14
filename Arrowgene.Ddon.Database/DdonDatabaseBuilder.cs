@@ -2,9 +2,11 @@
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Arrowgene.Ddon.Database.Context;
 using Arrowgene.Ddon.Database.Model;
 using Arrowgene.Ddon.Database.Sql;
 using Arrowgene.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Arrowgene.Ddon.Database
 {
@@ -15,7 +17,16 @@ namespace Arrowgene.Ddon.Database
 
         public static IDatabase Build(DatabaseSetting settings)
         {
+            
+            using (var context = new DdonDbContext(settings))
+            {
+                // context.Database.EnsureCreated();
+                context.Database.Migrate();
+                context.Database.CloseConnection();
+            }
+            
             Enum.TryParse(settings.Type, true, out DatabaseType dbType);
+            
             IDatabase database = dbType switch
             {
                 DatabaseType.SQLite => BuildSqLite(settings.DatabaseFolder, settings.WipeOnStartup),

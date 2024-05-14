@@ -3,6 +3,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using Arrowgene.Ddon.Database.Context;
 
 namespace Arrowgene.Ddon.Database.Sql
 {
@@ -18,6 +19,8 @@ namespace Arrowgene.Ddon.Database.Sql
         protected const long NoAutoIncrement = 0;
 
         protected abstract TCon OpenNewConnection();
+        
+        public abstract DdonDbContext CreateContext();
 
         protected virtual TCon ReusableConnection { get; set; }
 

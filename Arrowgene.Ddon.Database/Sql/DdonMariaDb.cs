@@ -1,4 +1,5 @@
 ﻿using System;
+using Arrowgene.Ddon.Database.Context;
 using Arrowgene.Ddon.Database.Sql.Core;
 using Arrowgene.Logging;
 using MySqlConnector;
@@ -53,6 +54,11 @@ namespace Arrowgene.Ddon.Database.Sql
             MySqlConnection connection = new MySqlConnection(_connectionString);
             connection.Open();
             return connection;
+        }
+
+        public override DdonDbContext CreateContext()
+        {
+            throw new NotImplementedException();
         }
 
         protected override MySqlCommand Command(string query, MySqlConnection connection)

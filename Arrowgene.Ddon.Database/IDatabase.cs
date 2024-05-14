@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using Arrowgene.Ddon.Database.Context;
 using Arrowgene.Ddon.Database.Model;
 using Arrowgene.Ddon.Shared.Entity.Structure;
 using Arrowgene.Ddon.Shared.Model;
@@ -15,6 +16,8 @@ namespace Arrowgene.Ddon.Database
         /// Return true if database was created, or false if not.
         /// </summary>
         bool CreateDatabase();
+
+        public DdonDbContext CreateContext();
 
         // Account
         Account CreateAccount(string name, string mail, string hash);

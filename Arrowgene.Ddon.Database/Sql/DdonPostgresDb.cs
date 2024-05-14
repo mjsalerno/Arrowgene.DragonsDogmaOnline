@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Data;
+using Arrowgene.Ddon.Database.Context;
+using Arrowgene.Ddon.Database.Model;
 using Arrowgene.Ddon.Database.Sql.Core;
 using Arrowgene.Logging;
 using Npgsql;
@@ -39,6 +41,11 @@ namespace Arrowgene.Ddon.Database.Sql
 
             ReusableConnection = _dataSource.OpenConnection();
             return true;
+        }
+
+        public override DdonDbContext CreateContext()
+        {
+            throw new NotImplementedException();
         }
 
         private string BuildConnectionString(string host, string user, string password, string database)
